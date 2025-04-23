@@ -15,27 +15,32 @@ export default function Signup() {
   const [password, setPassword] = useState('');
   const [isDoctor, setIsDoctor] = useState(false);
   const router = useRouter();
-  const {user , signUp , googleSignUp , error, isLoading} = useAuth()
+  const {user , signUp , googleSignUp , error : authError, isLoading} = useAuth()
 
   if (user) return null;
   
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     if(!email || !password){
       return;
     }
-    await signUp(email, password);
+    signUp(email, password, isDoctor);
    
   };
   const handleGoogleSignUp = async () => {
     await googleSignUp();
   };
 
-  useEffect(() => {
+  useEffect(() => {    
     if (user) {
-      router.push(isDoctor ? '/doctor/dashboard' : '/patient/dashboard');
+      const userType = user.userType
+      if(userType === 'doctor'){
+        router.push("/doctor/dashboard")
+      }else if(userType === 'patient'){
+        router.push("/patient/dashboard")
+      }else router.push("/")
     }
-  }, [user, isDoctor, router]);
+  }, [user, router]);
 
 
   return (
@@ -76,14 +81,14 @@ export default function Signup() {
                     id="isDoctor"
                     checked={isDoctor}
                     onCheckedChange={(e) => setIsDoctor(!isDoctor ? true : false)}
-                    className="mr-2"
+                    className="mr-2" 
                   />
                   Sign up as a Doctor
                 </label>
               </div>
 
               <div className="w-full">
-                {error && <p className="text-red-500 text-start">{error}</p>}
+                {authError && <p className="text-red-500 text-start">{authError}</p>}
               </div>
 
               <Button type="submit" className="w-full" disabled={isLoading}>Sign Up</Button>

@@ -1,7 +1,8 @@
 "use client";
 
 import Image from 'next/image';
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
+import { getAuth } from "firebase/auth";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect } from "react";
@@ -18,15 +19,20 @@ const images = [
 export default function Home() {
   const { user, logout } = useAuth();
   const router = useRouter()
-
-  useEffect(()=>{
-    if(user){
-        //here we can check if the user is doctor or patient
-        router.push('/patient/dashboard')
-        return;
-      
+  
+  useEffect(() => {
+    if (user) {
+      const auth = getAuth();
+      auth.currentUser?.getIdTokenResult().then((idTokenResult) => {
+        if (idTokenResult.claims.userType === "doctor") {
+          router.push('/doctor/dashboard');
+        } else if (idTokenResult.claims.userType === "patient") {
+          router.push('/patient/dashboard');
+        }
+      });
     }
-  },[user])
+  }, [user, router]);
+
   if(user === null){
 
   

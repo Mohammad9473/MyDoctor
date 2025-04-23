@@ -13,13 +13,16 @@ import {
   signOut,
   GoogleAuthProvider,
   signInWithPopup,
+  createUser,
+  setUserTypeClaim,
+  onAuthStateChanged,
 } from "@/lib/firebase";
-import { User } from "firebase/auth";
 
 interface AuthContextType {
-  user: User | null;
+  user: any | null;
+  userType: "doctor" | "patient" | null;
   login: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, isDoctor: boolean) => Promise<any>;
   googleSignUp: () => Promise<void>;
   logout: () => Promise<void>;
   isLoading: boolean;
@@ -27,8 +30,9 @@ interface AuthContextType {
 }
 
 const defaultAuthContext: AuthContextType = {
+  userType: null,
   user: null,
-  login: () => Promise.resolve(),
+    login: () => Promise.resolve(),
   signUp: () => Promise.resolve(),
   googleSignUp: () => Promise.resolve(),
   logout: () => Promise.resolve(),
@@ -45,12 +49,27 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [userType, setUserType] = useState<"doctor" | "patient" | null>(null);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((authUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
+      if(authUser){
+        const token = await authUser.getIdTokenResult();
+        const userTypeClaim = token.claims.userType;
+        if (userTypeClaim) {
+          if (userTypeClaim === "doctor" || userTypeClaim === "patient") {
+            setUserType(userTypeClaim);
+          }
+        }else {
+              setUserType(null);
+        }
+        setUser({...authUser, userType: token.claims.userType});
+      }else{
+        setUser(null);
+      }
       setUser(authUser);
       setIsLoading(false);
     });
@@ -70,13 +89,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, isDoctor: boolean) => {
     setIsLoading(true);
     setError(null);
+    let uid;
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      uid = userCredential.user.uid
+      await Promise.all([createUser(uid, isDoctor), setUserTypeClaim(uid, isDoctor)])
+      return userCredential;
     } catch (err: any) {
-      setError(err.message);
+      console.log('here error')
     } finally {
       setIsLoading(false);
     }
@@ -109,6 +136,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const value = {
     user,
+    userType,
     login,
     signUp,
     googleSignUp,

@@ -1,7 +1,10 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { getFirestore, doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup,   UserCredential,
+  onAuthStateChanged } from "firebase/auth";
+import { getFunctions, httpsCallable } from "firebase/functions";
+
 
 
 // TODO: Replace the following with your app's Firebase project configuration
@@ -24,8 +27,36 @@ export {
   signInWithEmailAndPassword,
   signOut,
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithPopup, onAuthStateChanged
 };
+  export type { UserCredential };
 
 // Initialize Cloud Firestore and get a reference to the service
 export const db = getFirestore(app);
+
+// Initialize Firebase Functions
+const functions = getFunctions(app);
+
+// Cloud Function to create a user document in Firestore
+export const createUser = async (uid: string, isDoctor: boolean) => {
+  try {
+    const userRef = doc(db, 'users', uid);
+    await setDoc(userRef, {
+      userType: isDoctor ? 'doctor' : 'patient',
+      createdAt: serverTimestamp(),
+    });
+  } catch (error) {
+    console.error('Error creating user document:', error);
+    throw error;
+  }
+};
+
+// Cloud Function to set user type custom claim
+export const setUserTypeClaim = async (uid: string, isDoctor: boolean) => {
+  const setUserType = httpsCallable(functions, 'setUserType');
+  try {
+    await setUserType({ uid: uid, userType: isDoctor ? 'doctor' : 'patient' });
+  } catch (error) {
+    console.error('Error setting user type claim:', error);
+  }
+};
