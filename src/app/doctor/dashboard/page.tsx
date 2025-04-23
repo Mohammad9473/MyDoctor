@@ -7,6 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { sendPrescriptionEmail } from '@/ai/flows/send-prescription-email-flow';
+import { db } from '@/lib/firebase';
+import { collection, getDocs } from 'firebase/firestore';
+
 
 interface PrescriptionRequest {
   id: string;
@@ -22,15 +25,25 @@ export default function DoctorDashboard() {
   const [prescriptionDetails, setPrescriptionDetails] = useState('');
   const [emailResult, setEmailResult] = useState<string | null>(null);
 
-  // Placeholder data - replace with actual data fetching from a database or API
   useEffect(() => {
-    // Simulate fetching data
-    const dummyData: PrescriptionRequest[] = [
-      { id: "1", patientDetails: "John Doe, 30 years old, history of allergies", disease: "Seasonal Allergies", preferredDoctor: "Dr. Smith", patientEmail: "john.doe@example.com" },
-      { id: "2", patientDetails: "Jane Smith, 45 years old, high blood pressure", disease: "Hypertension", patientEmail: "jane.smith@example.com" },
-      { id: "3", patientDetails: "Mike Brown, 25 years old, occasional migraines", disease: "Migraine", patientEmail: "mike.brown@example.com" },
-    ];
-    setPrescriptionRequests(dummyData);
+    const fetchPrescriptionRequests = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "prescriptionRequests"));
+        const requests: PrescriptionRequest[] = [];
+        querySnapshot.forEach((doc) => {
+          // Assuming your data structure matches the PrescriptionRequest interface
+          requests.push({
+            id: doc.id,
+            ...doc.data() as Omit<PrescriptionRequest, 'id'>,
+          });
+        });
+        setPrescriptionRequests(requests);
+      } catch (error) {
+        console.error("Error fetching prescription requests:", error);
+      }
+    };
+
+    fetchPrescriptionRequests();
   }, []);
 
   const handleRequestSelect = (request: PrescriptionRequest) => {
@@ -52,7 +65,7 @@ export default function DoctorDashboard() {
 
   return (
     <div className="flex flex-col items-center justify-start min-h-screen py-4 bg-background">
-      <main className="flex flex-col items-center justify-start w-full flex-1 px-20 text-center">
+      <main className="container mx-auto p-4">
         <h1 className="text-3xl font-bold mt-4 text-foreground">
           Doctor Dashboard
         </h1>
@@ -62,8 +75,8 @@ export default function DoctorDashboard() {
 
         <section className="w-full mt-8">
           <h2 className="text-2xl font-semibold mb-4 text-foreground">Prescription Requests</h2>
-          <div className="flex w-full">
-            <ScrollArea className="w-1/2 h-[400px] rounded-md border mr-4 shadow-sm">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <ScrollArea className="h-[500px] w-full rounded-md border shadow-sm">
               <div className="p-4 space-y-4">
                 {prescriptionRequests.map((request) => (
                   <Card
@@ -84,7 +97,7 @@ export default function DoctorDashboard() {
               </div>
             </ScrollArea>
 
-            <Card className="w-1/2 shadow-sm">
+            <Card className="shadow-sm">
               <CardHeader>
                 <CardTitle className="text-lg font-semibold">Enter Prescription</CardTitle>
                 <CardDescription className="text-sm text-muted-foreground">Enter the prescription details for the selected patient.</CardDescription>

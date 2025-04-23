@@ -18,6 +18,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { requestPrescription } from '@/ai/flows/request-prescription-flow';
+import { db } from '@/lib/firebase';
+import { collection, addDoc } from 'firebase/firestore';
 
 const formSchema = z.object({
   patientDetails: z.string().min(10, {
@@ -27,6 +29,9 @@ const formSchema = z.object({
     message: "Disease name must be at least 3 characters.",
   }),
   preferredDoctor: z.string().optional(),
+  patientEmail: z.string().email({
+    message: "Please enter a valid email address."
+  })
 });
 
 export default function PatientDashboard() {
@@ -38,18 +43,28 @@ export default function PatientDashboard() {
       patientDetails: "",
       disease: "",
       preferredDoctor: "",
+      patientEmail: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // Call the Genkit flow to request a prescription
-    const result = await requestPrescription(values);
-    setRequestResult(result.nextSteps);
+    try {
+      // Add the request to Firebase
+      const docRef = await addDoc(collection(db, "prescriptionRequests"), values);
+      console.log("Document written with ID: ", docRef.id);
+
+      // Call the Genkit flow to request a prescription
+      const result = await requestPrescription(values);
+      setRequestResult(result.nextSteps);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+      setRequestResult("An error occurred while submitting your request.");
+    }
   }
 
   return (
     <div className="flex flex-col items-center justify-start min-h-screen py-4 bg-background">
-      <main className="flex flex-col items-center justify-start w-full flex-1 px-20 text-center">
+      <main className="container mx-auto p-4">
         <h1 className="text-3xl font-bold mt-4 text-foreground">
           Patient Dashboard
         </h1>
@@ -109,6 +124,24 @@ export default function PatientDashboard() {
                         <FormDescription>
                           If you have a preferred doctor, please enter their name.
                         </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="patientEmail"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Patient Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter your email address"
+                            type="email"
+                            {...field}
+                            className="shadow-sm"
+                          />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
