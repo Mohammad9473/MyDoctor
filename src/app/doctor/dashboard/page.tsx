@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { sendPrescriptionEmail } from '@/ai/flows/send-prescription-email-flow';
 import { db } from '@/lib/firebase';
 import { collection, getDocs } from 'firebase/firestore';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 
 interface PrescriptionRequest {
@@ -64,7 +65,9 @@ export default function DoctorDashboard() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen py-4 bg-background">
+    <ProtectedRoute>
+
+      <div className="flex flex-col items-center justify-start min-h-screen py-4 bg-background">
       <main className="container mx-auto p-4">
         <h1 className="text-3xl font-bold mt-4 text-foreground">
           Doctor Dashboard
@@ -127,5 +130,8 @@ export default function DoctorDashboard() {
         </section>
       </main>
     </div>
+    </ProtectedRoute>
+
   );
 }
+
