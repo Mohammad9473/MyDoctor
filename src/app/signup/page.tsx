@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from 'next/link';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function Signup() {
   const [email, setEmail] = useState('');
@@ -38,47 +40,56 @@ export default function Signup() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
+    <div className="flex flex-col items-center justify-center min-h-screen py-4 bg-background">
       <main className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center">
-        <h1 className="text-3xl font-bold">
-          Sign Up to <span className="text-accent">MediScript Connect</span>
-        </h1>
+        <Card className="w-full max-w-md rounded-lg shadow-lg border-none">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-3xl font-bold text-foreground">
+              Sign Up to <span className="text-accent">MediScript Connect</span>
+            </CardTitle>
+            <CardDescription className="text-muted-foreground">
+              Create an account to connect with doctors and manage your prescriptions.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <form onSubmit={handleSubmit} className="flex flex-col items-center space-y-4">
+              <Input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full shadow-sm"
+              />
+              <Input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full shadow-sm"
+              />
 
-        <form onSubmit={handleSubmit} className="flex flex-col items-center mt-8">
-          <Input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="mb-4 w-80"
-          />
-          <Input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="mb-4 w-80"
-          />
+              <div className="flex items-center mb-4 w-full justify-start">
+                <label htmlFor="isDoctor" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center">
+                  <Checkbox
+                    id="isDoctor"
+                    checked={isDoctor}
+                    onCheckedChange={(e) => setIsDoctor(e)}
+                    className="mr-2"
+                  />
+                  Sign up as a Doctor
+                </label>
+              </div>
 
-          <div className="flex items-center mb-4">
-            <input
-              type="checkbox"
-              id="isDoctor"
-              checked={isDoctor}
-              onChange={(e) => setIsDoctor(e.target.checked)}
-              className="mr-2"
-            />
-            <label htmlFor="isDoctor">Sign up as a Doctor</label>
-          </div>
+              {error && <p className="text-red-500">{error}</p>}
 
-          {error && <p className="text-red-500">{error}</p>}
+              <Button type="submit" className="w-full">Sign Up</Button>
+            </form>
 
-          <Button type="submit">Sign Up</Button>
-        </form>
-
-        <p className="mt-4">
-          Already have an account? <Link href="/login" className="text-accent">Login</Link>
-        </p>
+            <p className="text-sm text-muted-foreground">
+              Already have an account? <Link href="/login" className="text-accent">Login</Link>
+            </p>
+          </CardContent>
+        </Card>
       </main>
     </div>
   );

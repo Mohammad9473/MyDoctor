@@ -48,22 +48,22 @@ export default function PatientDashboard() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen py-2">
+    <div className="flex flex-col items-center justify-start min-h-screen py-4 bg-background">
       <main className="flex flex-col items-center justify-start w-full flex-1 px-20 text-center">
-        <h1 className="text-3xl font-bold mt-4">
+        <h1 className="text-3xl font-bold mt-4 text-foreground">
           Patient Dashboard
         </h1>
-        <p className="mt-3 text-2xl">
+        <p className="mt-3 text-2xl text-muted-foreground">
           Welcome, Patient!
         </p>
 
         <section className="w-full mt-8">
-          <h2 className="text-2xl font-semibold mb-4">Request a Prescription</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-foreground">Request a Prescription</h2>
 
-          <Card className="w-full">
+          <Card className="w-full rounded-lg shadow-md border-none">
             <CardHeader>
-              <CardTitle>Enter your details</CardTitle>
-              <CardDescription>Please fill out the form below to request a prescription.</CardDescription>
+              <CardTitle className="text-lg font-semibold">Enter your details</CardTitle>
+              <CardDescription className="text-sm text-muted-foreground">Please fill out the form below to request a prescription.</CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...form}>
@@ -75,7 +75,7 @@ export default function PatientDashboard() {
                       <FormItem>
                         <FormLabel>Patient Details</FormLabel>
                         <FormControl>
-                          <Textarea placeholder="Enter your medical history and current symptoms" {...field} />
+                          <Textarea placeholder="Enter your medical history and current symptoms" {...field} className="shadow-sm" />
                         </FormControl>
                         <FormDescription>
                           Include any relevant information about your health.
@@ -91,7 +91,7 @@ export default function PatientDashboard() {
                       <FormItem>
                         <FormLabel>Disease/Condition</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter the disease or condition" {...field} />
+                          <Input placeholder="Enter the disease or condition" {...field} className="shadow-sm" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -104,7 +104,7 @@ export default function PatientDashboard() {
                       <FormItem>
                         <FormLabel>Preferred Doctor (Optional)</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter the name of your preferred doctor" {...field} />
+                          <Input placeholder="Enter the name of your preferred doctor" {...field} className="shadow-sm" />
                         </FormControl>
                         <FormDescription>
                           If you have a preferred doctor, please enter their name.
@@ -114,19 +114,19 @@ export default function PatientDashboard() {
                     )}
                   />
 
-                  <Button type="submit" disabled={!form.formState.isValid}>Submit Request</Button>
+                  <Button type="submit" disabled={!form.formState.isValid} className="w-full">Submit Request</Button>
                 </form>
               </Form>
             </CardContent>
           </Card>
 
           {requestResult && (
-            <Card className="w-full mt-8">
+            <Card className="w-full mt-8 rounded-lg shadow-md border-none">
               <CardHeader>
-                <CardTitle>Request Status</CardTitle>
+                <CardTitle className="text-lg font-semibold">Request Status</CardTitle>
               </CardHeader>
               <CardContent>
-                <p>{requestResult}</p>
+                <p className="text-muted-foreground">{requestResult}</p>
               </CardContent>
             </Card>
           )}

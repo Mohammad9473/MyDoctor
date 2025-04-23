@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from 'next/link';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -32,36 +33,44 @@ export default function Login() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
+    <div className="flex flex-col items-center justify-center min-h-screen py-4 bg-background">
       <main className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center">
-        <h1 className="text-3xl font-bold">
-          Login to <span className="text-accent">MediScript Connect</span>
-        </h1>
+        <Card className="w-full max-w-md rounded-lg shadow-lg border-none">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-3xl font-bold text-foreground">
+              Login to <span className="text-accent">MediScript Connect</span>
+            </CardTitle>
+            <CardDescription className="text-muted-foreground">
+              Enter your credentials to access your account.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <form onSubmit={handleSubmit} className="flex flex-col items-center space-y-4">
+              <Input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full shadow-sm"
+              />
+              <Input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full shadow-sm"
+              />
 
-        <form onSubmit={handleSubmit} className="flex flex-col items-center mt-8">
-          <Input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="mb-4 w-80"
-          />
-          <Input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="mb-4 w-80"
-          />
+              {error && <p className="text-red-500">{error}</p>}
 
-          {error && <p className="text-red-500">{error}</p>}
+              <Button type="submit" className="w-full">Login</Button>
+            </form>
 
-          <Button type="submit">Login</Button>
-        </form>
-
-        <p className="mt-4">
-          Don&apos;t have an account? <Link href="/signup" className="text-accent">Sign up</Link>
-        </p>
+            <p className="text-sm text-muted-foreground">
+              Don&apos;t have an account? <Link href="/signup" className="text-accent">Sign up</Link>
+            </p>
+          </CardContent>
+        </Card>
       </main>
     </div>
   );

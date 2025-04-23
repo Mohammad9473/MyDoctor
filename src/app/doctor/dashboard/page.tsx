@@ -51,55 +51,62 @@ export default function DoctorDashboard() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen py-2">
+    <div className="flex flex-col items-center justify-start min-h-screen py-4 bg-background">
       <main className="flex flex-col items-center justify-start w-full flex-1 px-20 text-center">
-        <h1 className="text-3xl font-bold mt-4">
+        <h1 className="text-3xl font-bold mt-4 text-foreground">
           Doctor Dashboard
         </h1>
-        <p className="mt-3 text-2xl">
+        <p className="mt-3 text-2xl text-muted-foreground">
           Welcome, Doctor!
         </p>
 
         <section className="w-full mt-8">
-          <h2 className="text-2xl font-semibold mb-4">Prescription Requests</h2>
-          <div className="flex">
-            <ScrollArea className="w-1/2 h-[400px] rounded-md border mr-4">
+          <h2 className="text-2xl font-semibold mb-4 text-foreground">Prescription Requests</h2>
+          <div className="flex w-full">
+            <ScrollArea className="w-1/2 h-[400px] rounded-md border mr-4 shadow-sm">
               <div className="p-4 space-y-4">
                 {prescriptionRequests.map((request) => (
-                  <Card key={request.id} onClick={() => handleRequestSelect(request)} className={`cursor-pointer ${selectedRequest?.id === request.id ? 'bg-accent' : ''}`}>
+                  <Card
+                    key={request.id}
+                    onClick={() => handleRequestSelect(request)}
+                    className={`cursor-pointer transition-colors duration-200 hover:bg-secondary ${selectedRequest?.id === request.id ? 'bg-accent text-accent-foreground' : ''}`}
+                  >
                     <CardHeader>
-                      <CardTitle>Request ID: {request.id}</CardTitle>
-                      <CardDescription>Disease: {request.disease}</CardDescription>
+                      <CardTitle className="text-lg font-semibold">Request ID: {request.id}</CardTitle>
+                      <CardDescription className="text-sm text-muted-foreground">Disease: {request.disease}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <p>Patient Details: {request.patientDetails}</p>
-                      {request.preferredDoctor && <p>Preferred Doctor: {request.preferredDoctor}</p>}
+                      <p className="text-sm">Patient Details: {request.patientDetails}</p>
+                      {request.preferredDoctor && <p className="text-sm">Preferred Doctor: {request.preferredDoctor}</p>}
                     </CardContent>
                   </Card>
                 ))}
               </div>
             </ScrollArea>
 
-            <Card className="w-1/2">
+            <Card className="w-1/2 shadow-sm">
               <CardHeader>
-                <CardTitle>Enter Prescription</CardTitle>
-                <CardDescription>Enter the prescription details for the selected patient.</CardDescription>
+                <CardTitle className="text-lg font-semibold">Enter Prescription</CardTitle>
+                <CardDescription className="text-sm text-muted-foreground">Enter the prescription details for the selected patient.</CardDescription>
               </CardHeader>
               <CardContent className="flex flex-col space-y-4">
                 {selectedRequest ? (
                   <>
-                    <p>Patient: {selectedRequest.patientDetails}</p>
-                    <p>Disease: {selectedRequest.disease}</p>
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium">Patient: {selectedRequest.patientDetails}</p>
+                      <p className="text-sm font-medium">Disease: {selectedRequest.disease}</p>
+                    </div>
                     <Textarea
                       placeholder="Prescription Details"
                       value={prescriptionDetails}
                       onChange={(e) => setPrescriptionDetails(e.target.value)}
+                      className="shadow-sm"
                     />
-                    <Button onClick={handleSendPrescription}>Send Prescription</Button>
-                    {emailResult && <p>{emailResult}</p>}
+                    <Button onClick={handleSendPrescription} className="w-full">Send Prescription</Button>
+                    {emailResult && <p className={`text-sm ${emailResult.startsWith('Prescription sent') ? 'text-green-500' : 'text-red-500'}`}>{emailResult}</p>}
                   </>
                 ) : (
-                  <p>Select a prescription request to view and enter prescription details.</p>
+                  <p className="text-sm text-muted-foreground">Select a prescription request to view and enter prescription details.</p>
                 )}
               </CardContent>
             </Card>

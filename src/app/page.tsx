@@ -13,16 +13,16 @@ const images = [
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
+    <div className="flex flex-col items-center justify-center min-h-screen py-4 bg-background">
       <main className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center">
-        <h1 className="text-4xl font-bold">
+        <h1 className="text-4xl font-bold text-foreground">
           Welcome to{' '}
           <span className="text-accent">
             MediScript Connect
           </span>
         </h1>
 
-        <p className="mt-3 text-2xl">
+        <p className="mt-3 text-2xl text-muted-foreground">
           Connect with doctors and get your prescriptions easily.
         </p>
 
@@ -43,7 +43,7 @@ export default function Home() {
           </Link>
         </div>
 
-        <p className="mt-8">
+        <p className="mt-8 text-muted-foreground">
           MediScript Connect - Your health, simplified.
         </p>
       </main>
