@@ -78,6 +78,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   const login = async (email: string, password: string) => {
+    alert('Coming Soon :D')
+    return
     setIsLoading(true);
     setError(null);
     try {
@@ -90,6 +92,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const signUp = async (email: string, password: string, isDoctor: boolean) => {
+    alert('Coming Soon :D')
+    return
     setIsLoading(true);
     setError(null);
     let uid;
@@ -110,6 +114,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const googleSignUp = async () => {
+    alert('Coming Soon :D')
+    return
     setIsLoading(true);
     setError(null);
     const provider = new GoogleAuthProvider();
@@ -123,6 +129,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = async () => {
+    alert('Coming Soon :D')
+    return
     setIsLoading(true);
     setError(null);
     try {
